@@ -9,7 +9,7 @@
 use strict;
 
 $|=0;
-my @TORAPI = (	'http://torcache.com/api/torcache.wsdl', 
+my @TORAPI = (	'http://torcache.net/api/torcache.wsdl', 
                 'http://zoink.it/api/torrage.wsdl',
                 'http://torrage.com/api/torrage.wsdl' );
 
