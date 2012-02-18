@@ -4,13 +4,13 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.31, 20120218
+# v1.32, 20120218
 #
 
 
 DEF_WORKDIR=/var/www/osm-torrent/files		# you must change this, if nothing else...
 DEF_EXPIRE_DAYS=5				# removes all big files except last older than this many days. Enlarge if you would like to keep several planets...
-DEF_FILE_TYPE=planet				# "planet" (or "changesets" for faster testing)
+DEF_FILE_TYPE=planet				# "planet" or "pbfplanet" (or "changesets" for faster testing)
 WGET_OPTIONS="--limit-rate=950k"		# if you want to speed limit wget of PLANET etc.
 
 # those can be overriden from environment, for example:
@@ -30,19 +30,31 @@ DATE=${DATE:-$(date --date '2 days ago' +%y%m%d)}	# due to timezones and stuff, 
 cd "$WORKDIR" || exit 101
 
 LICENSE="Original planets from http://planet.openstreetmap.org/ licensed under CC-BY-SA 2.0 by OpenStreetMap and contributors"
-FILE_PLANET="${FILE_TYPE}-${DATE}.osm.bz2"
+if [ "$FILE_TYPE" = "pbfplanet" ]
+then
+	FILE_PLANET="planet-${DATE}.osm.pbf"
+	URL_EXTRA_DIR="pbf/"
+else
+	FILE_PLANET="${FILE_TYPE}-${DATE}.osm.bz2"
+	URL_EXTRA_DIR=""
+fi
 FILE_MD5="${FILE_PLANET}.md5"
 FILE_TORRENT="${FILE_PLANET}.torrent"
-FILE_TORRENT_LATEST="${FILE_TORRENT/-*.osm.bz2.torrent/-latest.osm.bz2.torrent}"
-URL_PLANET2="http://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/${FILE_PLANET}"	# Germany, mirror planet.osm.org
-URL_PLANET="http://planet.osm.org/${FILE_PLANET}"	# webseed fallback, original site
+FILE_TORRENT_LATEST="${FILE_TORRENT/-*.osm./-latest.osm.}"
+URL_PLANET2="http://ftp5.gwdg.de/pub/misc/openstreetmap/planet.openstreetmap.org/${URL_EXTRA_DIR}${FILE_PLANET}"	# Germany, mirror planet.osm.org
+URL_PLANET="http://planet.osm.org/${URL_EXTRA_DIR}${FILE_PLANET}"	# webseed fallback, original site
 URL_MD5="${URL_PLANET}.md5"
 CHUNKSIZE=22		# 2^20=1MB, 2^22=4MB, etc. mktorrent 1.0 default ( 2^18=256kB) is too small for our ~15GB files
 
-[ "$DEBUG" -gt 0 ] && echo "PLANET=$URL_PLANET, file=$FILE_TORRENT"
+[ "$DEBUG" -gt 0 ] && echo "PLANET=$URL_PLANET $URL_PLANET2, MD5=$URL_MD5, file=$FILE_TORRENT, latest=$FILE_TORRENT_LATEST"
 
 # expire old planet.osm.bz2 files, as not to fill up disks
-find . -maxdepth 1 \( -name "${FILE_TYPE}*.bz2" ! -name ${FILE_PLANET} -mtime +${EXPIRE_DAYS} \) -print0 | xargs -r0 rm -fv
+if [ "$FILE_TYPE" = "pbfplanet" ]
+then
+	find . -maxdepth 1 \( -name "planet*.pbf" ! -name ${FILE_PLANET} -mtime +${EXPIRE_DAYS} \) -print0 | xargs -r0 rm -fv
+else
+	find . -maxdepth 1 \( -name "${FILE_TYPE}*.bz2" ! -name ${FILE_PLANET} -mtime +${EXPIRE_DAYS} \) -print0 | xargs -r0 rm -fv
+fi
 
 # abort new download if download currently in progress!
 [ -f "$FILE_PLANET" ] && fuser -s "$FILE_PLANET" && exit 0
