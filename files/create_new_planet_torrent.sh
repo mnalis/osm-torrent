@@ -4,7 +4,7 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.33, 20120218
+# v1.34, 20120218
 #
 
 
