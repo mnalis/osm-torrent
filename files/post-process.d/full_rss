@@ -1,0 +1,60 @@
+#!/bin/bash
+# Matija Nalis mnalis-osmplanetbt@voyager.hr, started 20101201. GPLv3+
+# creates RSS feed of last $MAX_FILES *.torrent files in current dir
+#
+# v1.07, 20101224
+
+MAX_FILES=20
+FILE_RSS="rss.xml"
+SUBDIR_RSS="/files/"
+RSS_BASEURL="http://osm-torrent.torres.voyager.hr"
+LICENSE="Original planets from http://planet.openstreetmap.org/ licensed under CC-BY-SA 2.0 by OpenStreetMap and contributors"
+
+############################################
+# no user configurable parts below
+############################################
+
+# create RSS feed
+FILE_RSS_TMP="${FILE_RSS}.tmp"
+
+# RSS header
+rm -f $FILE_RSS_TMP
+cat <<-EOF > $FILE_RSS_TMP
+	<?xml version="1.0" encoding="utf-8"?>
+	<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+	  <title>OpenStreetMap planet torrent RSS</title>
+	  <link>${RSS_BASEURL}</link>
+	  <atom:link href="${RSS_BASEURL}${SUBDIR_RSS}rss.xml" rel="self" type="application/rss+xml" />
+	  <description>RSS feed for planet.osm.bz2.torrent, $LICENSE</description>
+	  <language>en-us</language>
+	  <lastBuildDate>`date -R`</lastBuildDate>
+EOF
+
+# add item for each torrent
+for tf in `ls -1t *.torrent | head -n $MAX_FILES`
+do
+if [ ! -L "$tf" ]
+then
+cat <<-EOF >> $FILE_RSS_TMP
+	<item>
+	 <title>$tf</title>
+	 <guid>${RSS_BASEURL}${SUBDIR_RSS}$tf</guid>
+	 <pubDate>`date -R -r $tf`</pubDate>
+	 <category>OpenStreetMap</category>
+	 <link>${RSS_BASEURL}${SUBDIR_RSS}$tf</link>
+	 <enclosure url="${RSS_BASEURL}${SUBDIR_RSS}$tf" length="`find -maxdepth 1 -name ${tf%.torrent} -printf "%s"`" type="application/x-bittorrent" />
+	 <description>OSM Torrent $tf (torrent size: `find -maxdepth 1 -name $tf -printf "%s"`)</description>
+	</item>
+EOF
+fi
+done
+
+# RSS footer
+cat <<-EOF >> $FILE_RSS_TMP
+	</channel>
+	</rss>
+EOF
+
+# RSS file completed
+mv -f $FILE_RSS_TMP $FILE_RSS

@@ -1,0 +1,39 @@
+#!/usr/bin/perl -w
+#
+# Matija Nalis mnalis-osmplanetbt@voyager.hr, started 20101222. GPLv3+
+#
+# this post-process script feeds the created torrent file to torrage.com for caching
+# don't forget to "apt-get install libsoap-lite-perl" first.
+#
+
+use strict;
+
+$|=0;
+my @TORAPI = (	'http://torcache.com/api/torcache.wsdl', 
+                'http://zoink.it/api/torrage.wsdl',
+                'http://torrage.com/api/torrage.wsdl' );
+
+use MIME::Base64;
+use SOAP::Lite;
+
+my $file = $ARGV[0];
+die "Usage: $0 <some_file_to_cache.torrent>" unless defined($file);
+die "$0: can't read file $file" unless -r $file;
+
+#print "file=$file\n";
+
+open (TORRENT, '<', $file ) or die "can't read $file: $!";
+undef $/;	# slurp mode
+my $encoded = MIME::Base64::encode(<TORRENT>);
+close (TORRENT);
+
+foreach my $api (@TORAPI) {
+  print "$0 $api result: ";
+  eval {
+    my $info_hash = SOAP::Lite->service($api)->cacheTorrent($encoded);
+    print defined($info_hash) ? "$info_hash\n" : "undefined\n";;
+  };
+  print $@ if $@;
+}
+
+exit 0;

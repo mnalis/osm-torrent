@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# Matija Nalis mnalis-osmplanetbt@voyager.hr, started 20111020. GPLv3+
+#
+# this post-process script cleans up all but a latest *.bz2 file and 
+# manages the rtorrent feed directory
+#
+#
+# your .rtorrent.rc should look something like this:
+# note that /var/www/osm-torrent/files/rtorrent_auto should be empty
+# and that the *bz2 files are in /var/www/osm-torrent/files
+#
+
+## .rtorrent.rc example:
+#cwd=/var/www/osm-torrent/files/rtorrent_auto
+#directory=/var/www/osm-torrent/files/rtorrent_auto
+#
+#schedule = watch_directory,10,10,load_start="/var/www/osm-torrent/files/rtorrent_auto/*.torrent,d.set_directory=/var/www/osm-torrent/files"
+#schedule = tied_directory,10,10,start_tied=
+#schedule = untied_directory,10,10,close_untied=
+#
+#check_hash = no
+#use_udp_trackers = yes
+#dht = auto
+#dht_port = 6881
+#peer_exchange = yes
+## endo of .rtorrent.rc OSM example
+
+# RTORRENT_AUTODIR must be the same as cwd/directory in .rtorrent.rc !
+RTORRENT_AUTODIR=/var/www/osm-torrent/files/rtorrent_auto
+# BZ2_DIR must be same as d.set_directory= in .rtorrent.rc
+BZ2_DIR=/var/www/osm-torrent/files
+
+TORRENT="$1"
+
+if [ -z "$TORRENT" ]
+then
+  echo "Usage: $0 <last_file_to_cache.torrent>"
+  exit 1
+fi
+
+if [ -d $RTORRENT_AUTODIR -a -d $BZ2_DIR ]
+then
+  echo "$0: will symlink $1 to $RTORRENT_AUTODIR"
+  # this will untie and hence autostop all torrent
+  rm -f ${RTORRENT_AUTODIR}/*.torrent
+  # remove all OLD files taking up space (but not the newest ones)
+  find ${BZ2_DIR} -type f -iname "*.bz2" -mtime +4 -print0 | xargs -0r rm -fv
+  # symlink new torrent file to let rtorrent know it should autostart it!
+  cp ${BZ2_DIR}/${TORRENT} ${RTORRENT_AUTODIR}/${TORRENT}
+  exit 0
+else
+  echo "Check dirs: $RTORRENT_AUTODIR or $BZ2_DIR does not exist"
+  exit 2
+fi
