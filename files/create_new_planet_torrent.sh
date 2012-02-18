@@ -11,7 +11,7 @@
 DEF_WORKDIR=/var/www/osm-torrent/files		# you must change this, if nothing else...
 DEF_EXPIRE_DAYS=5				# removes all big files except last older than this many days. Enlarge if you would like to keep several planets...
 DEF_FILE_TYPE=planet				# "planet" or "pbfplanet" (or "changesets" for faster testing)
-WGET_OPTIONS="--limit-rate=950k"		# if you want to speed limit wget of PLANET etc.
+WGET_OPTIONS="--limit-rate=500k"		# if you want to speed limit wget of PLANET etc.
 
 # those can be overriden from environment, for example:
 # env FILE_TYPE=changesets EXPIRE_DAYS=30 WORKDIR=/tmp DATE=101201 create_new_planet_torrent.sh
@@ -88,8 +88,9 @@ fi
 # this is our full featured torrent file: redundant trackers, tcp+udp, ipv4+ipv6, webseed
 mktorrent -l $CHUNKSIZE \
   -c "See http://osm-torrent.torres.voyager.hr/ -- $LICENSE" \
-  -a http://tracker.ipv6tracker.org:80/announce,udp://tracker.ipv6tracker.org:80/announce \
   -a udp://tracker.publicbt.com:80/announce,http://tracker.publicbt.com:80/announce \
+  -a udp://tracker.ccc.de:80/announce,http://tracker.ccc.de/announce \
+  -a udp://tracker.ipv6tracker.org:80/announce,http://tracker.ipv6tracker.org:80/announce \
   -a udp://tracker.openbittorrent.com:80/announce \
   -a http://backuptrcker.marshyonline.net/announce \
   -w $URL_PLANET2 -w $URL_PLANET $FILE_PLANET -o ${FILE_TORRENT}.tmp \
