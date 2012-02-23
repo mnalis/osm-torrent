@@ -4,7 +4,7 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.34, 20120218
+# v1.35, 20120223
 #
 
 
@@ -47,7 +47,7 @@ URL_MD5="${URL_PLANET}.md5"
 CHUNKSIZE=22		# 2^20=1MB, 2^22=4MB, etc. mktorrent 1.0 default ( 2^18=256kB) is too small for our ~15GB files
 
 [ "$DEBUG" -gt 0 ] && echo "PLANET=$URL_PLANET $URL_PLANET2, MD5=$URL_MD5, file=$FILE_TORRENT, latest=$FILE_TORRENT_LATEST"
-[ "$DEBUG" -gt 8 ] && exit 0
+[ "$DEBUG" -gt 8 ] && exit 9
 
 # expire old planet.osm.bz2 files, as not to fill up disks
 if [ "$FILE_TYPE" = "pbfplanet" ]
@@ -58,7 +58,7 @@ else
 fi
 
 # abort new download if download currently in progress!
-[ -f "$FILE_PLANET" ] && fuser -s "$FILE_PLANET" && exit 0
+[ -f "$FILE_PLANET" ] && fuser -s "$FILE_PLANET" && exit 1
 
 # download new planet (if remote file changed)
 wget -q -N "$WGET_OPTIONS" "$URL_PLANET"
@@ -80,7 +80,7 @@ then
 	echo checksum ok
 else
 	echo checksum failed, aborting
-	exit 1
+	exit 2
 fi
 
 [ "$DEBUG" -gt 1 ] && echo "running mktorrent to create $FILE_TORRENT"
