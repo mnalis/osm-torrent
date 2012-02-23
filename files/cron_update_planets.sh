@@ -14,6 +14,9 @@ get_all()
 #DEBUG=9
 #export DEBUG
 
+# check if any other instance is running and abort if it is
+fuser -s /var/www/osm-torrent/files/*.osm.* && exit 0
+
 # default (2 days ago)
 get_all
 
@@ -22,3 +25,4 @@ DATE=$(date --date yesterday +\%y\%m\%d)
 export DATE
 get_all
 
+exit 0
