@@ -4,7 +4,7 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.35, 20120223
+# v1.36, 20120301
 #
 
 
@@ -92,7 +92,6 @@ mktorrent -l $CHUNKSIZE \
   -a udp://tracker.ccc.de:80/announce,http://tracker.ccc.de/announce \
   -a udp://tracker.ipv6tracker.org:80/announce,http://tracker.ipv6tracker.org:80/announce \
   -a udp://tracker.openbittorrent.com:80/announce \
-  -a http://backuptrcker.marshyonline.net/announce \
   -w $URL_PLANET2 -w $URL_PLANET $FILE_PLANET -o ${FILE_TORRENT}.tmp \
   && mv -f ${FILE_TORRENT}.tmp ${FILE_TORRENT} \
   && ln -sf ${FILE_TORRENT} ${FILE_TORRENT_LATEST}
