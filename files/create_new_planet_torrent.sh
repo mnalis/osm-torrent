@@ -4,7 +4,7 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.36, 20120301
+# v1.37, 20120304
 #
 
 
@@ -88,9 +88,10 @@ fi
 # this is our full featured torrent file: redundant trackers, tcp+udp, ipv4+ipv6, webseed
 mktorrent -l $CHUNKSIZE \
   -c "See http://osm-torrent.torres.voyager.hr/ -- $LICENSE" \
+  -a http://ipv4.tracker.osm-torrent.torres.voyager.hr/announce \
+  -a udp://tracker.ipv6tracker.org:80/announce,http://tracker.ipv6tracker.org:80/announce \
   -a udp://tracker.publicbt.com:80/announce,http://tracker.publicbt.com:80/announce \
   -a udp://tracker.ccc.de:80/announce,http://tracker.ccc.de/announce \
-  -a udp://tracker.ipv6tracker.org:80/announce,http://tracker.ipv6tracker.org:80/announce \
   -a udp://tracker.openbittorrent.com:80/announce \
   -w $URL_PLANET2 -w $URL_PLANET $FILE_PLANET -o ${FILE_TORRENT}.tmp \
   && mv -f ${FILE_TORRENT}.tmp ${FILE_TORRENT} \
