@@ -4,14 +4,14 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.37, 20120304
+# v1.41, 20120920
 #
 
 
 DEF_WORKDIR=/var/www/osm-torrent/files		# you must change this, if nothing else...
 DEF_EXPIRE_DAYS=5				# removes all big files except last older than this many days. Enlarge if you would like to keep several planets...
 DEF_FILE_TYPE=planet				# "planet" or "pbfplanet" (or "changesets" for faster testing)
-WGET_OPTIONS="--limit-rate=500k"		# if you want to speed limit wget of PLANET etc.
+WGET_OPTIONS="--limit-rate=1500k"		# if you want to speed limit wget of PLANET etc.
 
 # those can be overriden from environment, for example:
 # env FILE_TYPE=changesets EXPIRE_DAYS=30 WORKDIR=/tmp DATE=101201 create_new_planet_torrent.sh
@@ -29,14 +29,14 @@ DATE=${DATE:-$(date --date '2 days ago' +%y%m%d)}	# due to timezones and stuff, 
 
 cd "$WORKDIR" || exit 101
 
-LICENSE="Original planets from http://planet.openstreetmap.org/ licensed under CC-BY-SA 2.0 by OpenStreetMap and contributors"
+LICENSE="Original planets from http://planet.openstreetmap.org/ licensed under ODbL 1.0 by OpenStreetMap contributors"
 if [ "$FILE_TYPE" = "pbfplanet" ]
 then
 	FILE_PLANET="planet-${DATE}.osm.pbf"
 	URL_EXTRA_DIR="pbf/"
 else
 	FILE_PLANET="${FILE_TYPE}-${DATE}.osm.bz2"
-	URL_EXTRA_DIR=""
+	URL_EXTRA_DIR="planet/20${DATE%????}/" 	# gives "planet/2012/" for 120822 for example
 fi
 FILE_MD5="${FILE_PLANET}.md5"
 FILE_TORRENT="${FILE_PLANET}.torrent"
@@ -61,7 +61,7 @@ fi
 [ -f "$FILE_PLANET" ] && fuser -s "$FILE_PLANET" && exit 1
 
 # download new planet (if remote file changed)
-wget -q -N "$WGET_OPTIONS" "$URL_PLANET"
+wget -q -N -c "$WGET_OPTIONS" "$URL_PLANET"
 RET=$?
 [ "$DEBUG" -gt 1 ] && echo "wget $URL_PLANET -- return code $RET"
 
@@ -89,6 +89,7 @@ fi
 mktorrent -l $CHUNKSIZE \
   -c "See http://osm-torrent.torres.voyager.hr/ -- $LICENSE" \
   -a http://ipv4.tracker.osm-torrent.torres.voyager.hr/announce \
+  -a http://ipv6.tracker.osm-torrent.torres.voyager.hr/announce \
   -a udp://tracker.ipv6tracker.org:80/announce,http://tracker.ipv6tracker.org:80/announce \
   -a udp://tracker.publicbt.com:80/announce,http://tracker.publicbt.com:80/announce \
   -a udp://tracker.ccc.de:80/announce,http://tracker.ccc.de/announce \
