@@ -25,4 +25,14 @@ DATE=$(date --date yesterday +\%y\%m\%d)
 export DATE
 get_all
 
+# day before yesterday ?
+DATE=$(date --date '2 days ago' +\%y\%m\%d)
+export DATE
+get_all
+
+# day before day before yesterday ?
+DATE=$(date --date '3 days ago' +\%y\%m\%d)
+export DATE
+get_all
+
 exit 0
