@@ -2,13 +2,13 @@
 # Matija Nalis mnalis-osmplanetbt@voyager.hr, started 20101201. GPLv3+
 # creates RSS feed of last $MAX_FILES *.torrent files in current dir
 #
-# v1.07, 20101224
+# v1.08, 20120927
 
 MAX_FILES=20
 FILE_RSS="rss.xml"
 SUBDIR_RSS="/files/"
 RSS_BASEURL="http://osm-torrent.torres.voyager.hr"
-LICENSE="Original planets from http://planet.openstreetmap.org/ licensed under CC-BY-SA 2.0 by OpenStreetMap and contributors"
+LICENSE="Original planets from http://planet.openstreetmap.org/ licensed under ODbL v1.0 by OpenStreetMap contributors"
 
 ############################################
 # no user configurable parts below
