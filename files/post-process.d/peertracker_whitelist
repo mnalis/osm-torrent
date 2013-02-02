@@ -1,0 +1,5 @@
+#!/bin/sh
+# Matija Nalis mnalis-osmplanetbt@voyager.hr, started 20120305. GPLv3+
+# 
+
+/home/mnalis/osm-torrent-tracker/peertracker_whitelist_hash.pl "$@"
