@@ -18,6 +18,11 @@ get_all()
 fuser -s /var/www/osm-torrent/files/*.osm.* && exit 0
 
 # default (2 days ago)
+#get_all
+
+# today ?
+DATE=$(date --date today +\%y\%m\%d)
+export DATE
 get_all
 
 # yesterday ?
@@ -32,6 +37,16 @@ get_all
 
 # day before day before yesterday ?
 DATE=$(date --date '3 days ago' +\%y\%m\%d)
+export DATE
+get_all
+
+# day before day before day before yesterday ?
+DATE=$(date --date '4 days ago' +\%y\%m\%d)
+export DATE
+get_all
+
+# day before day before day before day before yesterday ?
+DATE=$(date --date '5 days ago' +\%y\%m\%d)
 export DATE
 get_all
 
