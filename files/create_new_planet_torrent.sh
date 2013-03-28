@@ -4,7 +4,7 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.41, 20120920
+# v1.51, 20130328
 #
 
 
@@ -12,6 +12,7 @@ DEF_WORKDIR=/var/www/osm-torrent/files		# you must change this, if nothing else.
 DEF_EXPIRE_DAYS=5				# removes all big files except last older than this many days. Enlarge if you would like to keep several planets...
 DEF_FILE_TYPE=planet				# "planet" or "pbfplanet" (or "changesets" for faster testing)
 WGET_OPTIONS="--limit-rate=1500k"		# if you want to speed limit wget of PLANET etc.
+ARIA2_OPTIONS="--allow-piece-length-change=true --file-allocation=none --uri-selector=inorder --max-overall-download-limit=1500K"	# if defined, uses aria2c instead of wget for main download
 
 # those can be overriden from environment, for example:
 # env FILE_TYPE=changesets EXPIRE_DAYS=30 WORKDIR=/tmp DATE=101201 create_new_planet_torrent.sh
@@ -60,7 +61,20 @@ fi
 # abort new download if download currently in progress!
 [ -f "$FILE_PLANET" ] && fuser -s "$FILE_PLANET" && exit 1
 
+# exit silently if this torrent is already created
+[ -f "$FILE_TORRENT" ] && exit 0
+
 # download new planet (if remote file changed)
+if which aria2c  > /dev/null
+then
+	if [ -n "$ARIA2_OPTIONS" ]
+	then
+		aria2c -q -R $ARIA2_OPTIONS "$URL_PLANET" "$URL_PLANET2" \
+			"http://ftp.heanet.ie/mirrors/openstreetmap.org/${URL_EXTRA_DIR}${FILE_PLANET}" \
+			"ftp://ftp.spline.de/pub/openstreetmap/${URL_EXTRA_DIR}${FILE_PLANET}"
+	fi
+fi
+
 wget -q -N -c "$WGET_OPTIONS" "$URL_PLANET"
 RET=$?
 [ "$DEBUG" -gt 1 ] && echo "wget $URL_PLANET -- return code $RET"
