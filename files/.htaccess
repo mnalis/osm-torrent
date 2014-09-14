@@ -1,2 +1,9 @@
 #IndexOptions IgnoreClient FancyIndexing
 IndexOrderDefault Descending Date
+
+# stop bots from downloading GBs /mn/ 20131015
+<FilesMatch "\.(bz2|pbf)$">
+	Order Deny,Allow
+	Deny from all
+	Allow from 10.0.0.0/8 192.168.0.0/16 83.139.110.0/26
+</FilesMatch>

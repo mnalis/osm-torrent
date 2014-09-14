@@ -4,15 +4,16 @@
 #
 # you should edit "WORKDIR=" line, and copy this script in your /etc/cron.daily
 #
-# v1.51, 20130328
+# v1.53, 20131011
 #
 
 
+MAX_BANDWIDTH="8000k"				# limit bandwith to max 8000 kBytes/s
 DEF_WORKDIR=/var/www/osm-torrent/files		# you must change this, if nothing else...
 DEF_EXPIRE_DAYS=5				# removes all big files except last older than this many days. Enlarge if you would like to keep several planets...
 DEF_FILE_TYPE=planet				# "planet" or "pbfplanet" (or "changesets" for faster testing)
-WGET_OPTIONS="--limit-rate=1500k"		# if you want to speed limit wget of PLANET etc.
-ARIA2_OPTIONS="--allow-piece-length-change=true --file-allocation=none --uri-selector=inorder --max-overall-download-limit=1500K"	# if defined, uses aria2c instead of wget for main download
+WGET_OPTIONS="--limit-rate=$MAX_BANDWIDTH --no-verbose"	# if you want to speed limit wget of PLANET etc.
+ARIA2_OPTIONS="--allow-piece-length-change=true --file-allocation=none --uri-selector=inorder --max-overall-download-limit=$MAX_BANDWIDTH"	# if defined, uses aria2c instead of wget for main download
 
 # those can be overriden from environment, for example:
 # env FILE_TYPE=changesets EXPIRE_DAYS=30 WORKDIR=/tmp DATE=101201 create_new_planet_torrent.sh
@@ -75,7 +76,7 @@ then
 	fi
 fi
 
-wget -q -N -c "$WGET_OPTIONS" "$URL_PLANET"
+wget -q -N -c $WGET_OPTIONS "$URL_PLANET"
 RET=$?
 [ "$DEBUG" -gt 1 ] && echo "wget $URL_PLANET -- return code $RET"
 
@@ -85,7 +86,7 @@ RET=$?
 # exit silently if planet file didn't change (torrent is newer than file)
 [ "$FILE_TORRENT" -nt "$FILE_PLANET" ] && exit 0
 
-wget -N "$WGET_OPTIONS" "$URL_MD5"
+wget -N $WGET_OPTIONS "$URL_MD5"
 RET=$?
 [ "$DEBUG" -gt 1 ] && echo "wget $URL_MD5 -- return code $RET"
 
