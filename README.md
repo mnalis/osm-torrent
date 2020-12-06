@@ -1,6 +1,15 @@
 # osm-torrent (discontinued)
 
-OpenStreetMap planet torrent implementation
+OpenStreetMap planet torrent proof-of-concept implementation
+
+# update (2020-08-26)
+
+Official OSM bittorrent support has now been implemented:
+https://github.com/openstreetmap/operations/issues/451
+
+# Historical
+
+For historical information, see:
 see https://trac.openstreetmap.org/ticket/137
 and https://trac.openstreetmap.org/ticket/1725
 
@@ -9,9 +18,3 @@ has been shut down as of 2014-09-15.
 
 Archiving code if anybody wants to pick it up...
 
-# update (2020-08-26) 
-
-It seems there is interest by openstreetmap operations to implement
-bittorrent support:
-
-https://github.com/openstreetmap/operations/issues/451
