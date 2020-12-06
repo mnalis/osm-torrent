@@ -2,10 +2,13 @@
 
 OpenStreetMap planet torrent proof-of-concept implementation
 
-# update (2020-08-26)
+# update (2020-11-24)
 
 Official OSM bittorrent support has now been implemented:
-https://github.com/openstreetmap/operations/issues/451
+See https://github.com/openstreetmap/operations/issues/451
+
+So please help to seed the swarm and keep it healthy!
+
 
 # Historical
 
